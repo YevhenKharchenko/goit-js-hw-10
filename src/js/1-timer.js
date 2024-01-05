@@ -5,6 +5,7 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 let userSelectedDate;
 const startBtn = document.querySelector('[data-start]');
+const datetimePicker = document.querySelector('#datetime-picker');
 const remainingDays = document.querySelector('[data-days]');
 const remainingHours = document.querySelector('[data-hours]');
 const remainingMinutes = document.querySelector('[data-minutes]');
@@ -17,17 +18,11 @@ const options = {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    const parsedSelectedDate = Date.parse(selectedDates[0]);
-    const currentDate = Date.now();
+    userSelectedDate = Date.parse(selectedDates[0]);
 
-    if (parsedSelectedDate > currentDate) {
+    if (selectedDates[0] > Date.now()) {
       startBtn.removeAttribute('disabled');
-
-      userSelectedDate = parsedSelectedDate - currentDate;
-
-      startBtn.addEventListener('click', () => {
-        setInterval(onStartBtnClick, 1000);
-      });
+      startBtn.addEventListener('click', onStartBtnClick);
     } else {
       startBtn.setAttribute('disabled', true);
       iziToast.error({
@@ -40,28 +35,32 @@ const options = {
         progressBar: false,
       });
     }
+
+    function onStartBtnClick() {
+      startBtn.setAttribute('disabled', true);
+      datetimePicker.setAttribute('disabled', true);
+
+      function timer() {
+        const parsedSelectedDate = userSelectedDate;
+        const countdownInterval = setInterval(() => {
+          const currentDate = Date.now();
+          const remainingTime = parsedSelectedDate - currentDate;
+          const convertedTime = convertMs(remainingTime);
+
+          remainingDays.textContent = addLeadingZero(convertedTime.days);
+          remainingHours.textContent = addLeadingZero(convertedTime.hours);
+          remainingMinutes.textContent = addLeadingZero(convertedTime.minutes);
+          remainingSeconds.textContent = addLeadingZero(convertedTime.seconds);
+
+          if (remainingTime < 1000) {
+            clearInterval(countdownInterval);
+          }
+        }, 1000);
+      }
+      timer();
+    }
   },
 };
-
-function onStartBtnClick() {
-  startBtn.setAttribute('disabled', true);
-
-  const countdownInterval = setInterval(() => {
-    console.log(userSelectedDate);
-    const remainingTime = convertMs(userSelectedDate);
-
-    remainingDays.textContent = addLeadingZero(remainingTime.days);
-    remainingHours.textContent = addLeadingZero(remainingTime.hours);
-    remainingMinutes.textContent = addLeadingZero(remainingTime.minutes);
-    remainingSeconds.textContent = addLeadingZero(remainingTime.seconds);
-  }, 1000);
-
-  if (userSelectedDate < 1000) {
-    clearInterval(countdownInterval);
-  } else {
-    userSelectedDate -= 1000;
-  }
-}
 
 function addLeadingZero(value) {
   return value.toString().padStart(2, '0');
@@ -86,4 +85,4 @@ function convertMs(ms) {
   return { days, hours, minutes, seconds };
 }
 
-flatpickr('#datetime-picker', options);
+flatpickr(datetimePicker, options);
