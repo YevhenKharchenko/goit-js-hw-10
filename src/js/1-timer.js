@@ -1,12 +1,14 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
+import iziToast from 'izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
 
 let userSelectedDate;
 const startBtn = document.querySelector('[data-start]');
-const remainDays = document.querySelector('[data-days]');
-const remainHours = document.querySelector('[data-hours]');
-const remainMinutes = document.querySelector('[data-minutes]');
-const remainSeconds = document.querySelector('[data-minutes]');
+const remainingDays = document.querySelector('[data-days]');
+const remainingHours = document.querySelector('[data-hours]');
+const remainingMinutes = document.querySelector('[data-minutes]');
+const remainingSeconds = document.querySelector('[data-seconds]');
 startBtn.setAttribute('disabled', true);
 
 const options = {
@@ -16,28 +18,54 @@ const options = {
   minuteIncrement: 1,
   onClose(selectedDates) {
     const parsedSelectedDate = Date.parse(selectedDates[0]);
-    const today = Date.now();
+    const currentDate = Date.now();
 
-    if (parsedSelectedDate > today) {
+    if (parsedSelectedDate > currentDate) {
       startBtn.removeAttribute('disabled');
 
-      userSelectedDate = parsedSelectedDate - today;
+      userSelectedDate = parsedSelectedDate - currentDate;
 
       startBtn.addEventListener('click', () => {
-        return setInterval(onStartBtnClick, 1000);
+        setInterval(onStartBtnClick, 1000);
       });
-
-      function onStartBtnClick() {
-        remainDays.textContent = convertMs(userSelectedDate).days;
-        remainHours.textContent = convertMs(userSelectedDate).hours;
-        remainMinutes.textContent = convertMs(userSelectedDate).minutes;
-        remainSeconds.textContent = convertMs(userSelectedDate).seconds;
-      }
     } else {
-      alert('no');
+      startBtn.setAttribute('disabled', true);
+      iziToast.error({
+        title: '',
+        message: 'Please choose a date in the future',
+        position: 'topRight',
+        backgroundColor: 'orangered',
+        messageColor: 'white',
+        close: false,
+        progressBar: false,
+      });
     }
   },
 };
+
+function onStartBtnClick() {
+  startBtn.setAttribute('disabled', true);
+
+  const countdownInterval = setInterval(() => {
+    console.log(userSelectedDate);
+    const remainingTime = convertMs(userSelectedDate);
+
+    remainingDays.textContent = addLeadingZero(remainingTime.days);
+    remainingHours.textContent = addLeadingZero(remainingTime.hours);
+    remainingMinutes.textContent = addLeadingZero(remainingTime.minutes);
+    remainingSeconds.textContent = addLeadingZero(remainingTime.seconds);
+  }, 1000);
+
+  if (userSelectedDate < 1000) {
+    clearInterval(countdownInterval);
+  } else {
+    userSelectedDate -= 1000;
+  }
+}
+
+function addLeadingZero(value) {
+  return value.toString().padStart(2, '0');
+}
 
 function convertMs(ms) {
   // Number of milliseconds per unit of time

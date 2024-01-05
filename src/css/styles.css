@@ -21,3 +21,24 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
+.timer {
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.value {
+  font-size: 30px;
+  text-align: center;
+}
+
+.label {
+  font-size: 14px;
+  text-transform: uppercase;
+}
