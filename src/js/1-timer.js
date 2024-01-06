@@ -25,9 +25,11 @@ const options = {
 
     if (userSelectedDate > Date.now()) {
       startBtn.removeAttribute('disabled');
+
       startBtn.addEventListener('click', onStartBtnClick);
     } else {
       startBtn.setAttribute('disabled', true);
+
       iziToast.error({
         title: '',
         message: 'Please choose a date in the future',
@@ -52,8 +54,8 @@ const options = {
           timerValue[key].textContent = addLeadingZero(value);
         });
 
+        // Another option to assign timer values
         // const { days, hours, minutes, seconds } = convertMs(remainingTime);
-
         // timerValue.days.textContent = addLeadingZero(days);
         // timerValue.hours.textContent = addLeadingZero(hours);
         // timerValue.minutes.textContent = addLeadingZero(minutes);

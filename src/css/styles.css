@@ -22,6 +22,10 @@
   -webkit-text-size-adjust: 100%;
 }
 
+body {
+  box-sizing: border-box;
+}
+
 .timer {
   display: flex;
   gap: 20px;
@@ -41,4 +45,29 @@
 .label {
   font-size: 14px;
   text-transform: uppercase;
+}
+
+.form {
+  width: 300px;
+}
+
+form > label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+input[type='number'] {
+  height: 30px;
+  font-size: 20px;
+}
+
+fieldset {
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: space-evenly;
+}
+
+button[type='submit'] {
+  width: 300px;
 }
