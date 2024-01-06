@@ -6,10 +6,13 @@ import 'izitoast/dist/css/iziToast.min.css';
 let userSelectedDate;
 const startBtn = document.querySelector('[data-start]');
 const datetimePicker = document.querySelector('#datetime-picker');
-const remainingDays = document.querySelector('[data-days]');
-const remainingHours = document.querySelector('[data-hours]');
-const remainingMinutes = document.querySelector('[data-minutes]');
-const remainingSeconds = document.querySelector('[data-seconds]');
+const timerValue = {
+  days: document.querySelector('[data-days]'),
+  hours: document.querySelector('[data-hours]'),
+  minutes: document.querySelector('[data-minutes]'),
+  seconds: document.querySelector('[data-seconds]'),
+};
+
 startBtn.setAttribute('disabled', true);
 
 const options = {
@@ -20,7 +23,7 @@ const options = {
   onClose(selectedDates) {
     userSelectedDate = Date.parse(selectedDates[0]);
 
-    if (selectedDates[0] > Date.now()) {
+    if (userSelectedDate > Date.now()) {
       startBtn.removeAttribute('disabled');
       startBtn.addEventListener('click', onStartBtnClick);
     } else {
@@ -40,24 +43,26 @@ const options = {
       startBtn.setAttribute('disabled', true);
       datetimePicker.setAttribute('disabled', true);
 
-      function timer() {
-        const parsedSelectedDate = userSelectedDate;
-        const countdownInterval = setInterval(() => {
-          const currentDate = Date.now();
-          const remainingTime = parsedSelectedDate - currentDate;
-          const convertedTime = convertMs(remainingTime);
+      const countdownInterval = setInterval(() => {
+        const currentTime = Date.now();
+        const remainingTime = userSelectedDate - currentTime;
+        const convertedRemainingTime = convertMs(remainingTime);
 
-          remainingDays.textContent = addLeadingZero(convertedTime.days);
-          remainingHours.textContent = addLeadingZero(convertedTime.hours);
-          remainingMinutes.textContent = addLeadingZero(convertedTime.minutes);
-          remainingSeconds.textContent = addLeadingZero(convertedTime.seconds);
+        Object.entries(convertedRemainingTime).forEach(([key, value]) => {
+          timerValue[key].textContent = addLeadingZero(value);
+        });
 
-          if (remainingTime < 1000) {
-            clearInterval(countdownInterval);
-          }
-        }, 1000);
-      }
-      timer();
+        // const { days, hours, minutes, seconds } = convertMs(remainingTime);
+
+        // timerValue.days.textContent = addLeadingZero(days);
+        // timerValue.hours.textContent = addLeadingZero(hours);
+        // timerValue.minutes.textContent = addLeadingZero(minutes);
+        // timerValue.seconds.textContent = addLeadingZero(seconds);
+
+        if (remainingTime < 1000) {
+          clearInterval(countdownInterval);
+        }
+      }, 1000);
     }
   },
 };
