@@ -3,7 +3,6 @@ import 'izitoast/dist/css/iziToast.min.css';
 
 const form = document.querySelector('form');
 const numberInput = document.querySelector('[type=number]');
-const submitBtn = document.querySelector('[type-submit]');
 
 function onSubmitBtnClick(event) {
   event.preventDefault();
@@ -24,8 +23,28 @@ function onSubmitBtnClick(event) {
   };
 
   makePromise()
-    .then(value => console.log(value))
-    .catch(error => console.log(error));
+    .then(value =>
+      iziToast.show({
+        message: value,
+        position: 'topRight',
+        backgroundColor: 'green',
+        messageColor: 'white',
+        close: false,
+        progressBar: false,
+        class: '.snackbar-izitoast',
+      })
+    )
+    .catch(error =>
+      iziToast.show({
+        message: error,
+        position: 'topRight',
+        backgroundColor: 'red',
+        messageColor: 'white',
+        close: false,
+        progressBar: false,
+        class: '.snackbar-izitoast',
+      })
+    );
 
   form.reset();
 }
